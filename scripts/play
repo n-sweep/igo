@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+data=$(cat "/tmp/$*.json")
+len=$(echo "$data" | jq '.turns | length')
+speed=$(echo "$data" | jq '.speed')
+
+for i in $(seq 0 $((len - 1))); do
+    echo "$data" | jq -r ".turns[$i]"
+    sleep "$speed"
+done

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+speed=0.25
+buff=10
+
+data=$(python3 src/baduk.py $@ | jq ".speed = $speed")
+id=$(echo $data | jq -r '.id')
+size=$(echo $data | jq -r '.size')
+
+echo $data > ./.data/$id.json
+
+len=$(echo $data | jq '.turns | length')
+sleep_time=$(python3 -c "print(int($len * $speed) + $buff + 1)")
+
+echo $id $len $sleep_time
+
+file=$(python3 src/tape.py $id $size $sleep_time)
+
+sudo docker run --rm -v $PWD:/vhs vhs $file

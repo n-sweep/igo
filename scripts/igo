@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+ALPHA='abcdefghijklmnopqrstuvwxyz'
+id=$(cat ~/.config/ogs/client_id)
+secret=$(cat ~/.config/ogs/client_secret)
+pw=$(cat ~/.config/ogs/pw)
+
+# curl --include \
+#      --request POST \
+#      --header "Content-Type: application/json" \
+#      --data "{\"username\":\"n_sweep\",\"password\":\"$pw\"}" \
+# 'https://online-go.com/api/v0/login'
+
+curl 'https://online-go.com/api/v1/games/67790830' | jq
