@@ -85,14 +85,9 @@ class Base(commands.Cog):
 
 
 class Bot(commands.Bot):
-    def __init__(self, token_fp: str):
+    def __init__(self, token: str):
         super().__init__(command_prefix='!', intents=intents)
-        self.token_fp = token_fp
-
-    @property
-    def token(self) -> str:
-        with open(self.token_fp, 'r') as f:
-            return f.read()
+        self.token = token
 
     async def on_ready(self):
         print(f'We have logged in as {self.user}')
@@ -103,7 +98,9 @@ class Bot(commands.Bot):
 
 
 def main():
-    bot = Bot('/home/n/.config/discord/bots/gobot/token')
+    with open('/home/n/.config/discord/bots/gobot/token', 'r') as f:
+        token = f.read().strip()
+    bot = Bot(token)
     bot.run()
 
 

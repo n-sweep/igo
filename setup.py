@@ -6,10 +6,11 @@ setup(
     description='a discord/OGS utility',
     author='n_sweep',
     author_email='n@sweep.sh',
-    packages=['gobot'],
+    packages=['igo'],
     install_requires=[
         'beautifulsoup4',
         'discord.py',
+        'imageio',
         'numpy',
         'plotly',
         'requests',

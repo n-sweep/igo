@@ -121,7 +121,7 @@ def draw_go_board(board: Board, game_id: str|int, path: str = '/tmp/ogs', overwr
                 showarrow=False,
                 font=dict(
                     color='#424242',
-                    family='Roboto Black',
+                    family="Roboto Black",
                     size=text_size,
                     weight='bold'
                 )
