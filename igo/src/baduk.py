@@ -2,6 +2,7 @@ import os
 import imageio.v2 as iio
 import requests
 import numpy as np
+from itertools import product
 from src.util import draw_go_board, get_star_points, read_sgf
 
 from typing import Generator
@@ -89,12 +90,20 @@ class Board:
         return str(self.state)
 
     def __str__(self) -> str:
+        # get star points
+        star_points = np.zeros((self.size,self.size), dtype=int)
+        s = 3 if self.size > 9 else 2
+        corners = [j for i in range(3) if (j:=(s+(2*s*i))) < self.size]
+        pts = [(f:=self.size//2, f)] + list(product(corners, repeat=2))
+        star_points[*zip(*pts)] = -1
+
         board = self.state.copy()
         mask = ~self.state.astype(bool)
-        board[mask] = get_star_points(self.size)[mask]
+        board[mask] = star_points[mask]
 
         joined = ' '.join(list(ALPHA.replace('i', '')[:self.size])).upper()
-        col_label = f"{YELLOW}---{BLACK}{joined}{YELLOW}----"
+        s = 3 if self.size > 9 else 2
+        col_label = f"{YELLOW}{'-'*s}{BLACK}{joined}{YELLOW}{'-'*(s+1)}"
         rows = [col_label]
 
         for r, input_row in enumerate(board, 1):
@@ -108,14 +117,7 @@ class Board:
 
         rows = [f'{BG_YELLOW}{row}{RESET}' for row in rows]
 
-        output = [
-            f"{B}{self.meta['PB']}",
-            f"{W}{self.meta['PW']}",
-            *rows,
-            f'Move {self.move}'
-        ]
-
-        return '\n\n' + '\n'.join(output)
+        return '\n\n' + '\n'.join(rows)
 
 
 class Stone:

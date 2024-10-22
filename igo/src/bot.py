@@ -1,6 +1,7 @@
 import os
 import asyncio
 import discord
+import logging
 import concurrent.futures
 from discord.ext import commands
 
@@ -8,6 +9,8 @@ from src.baduk import OGSGame
 
 B = "⚫"
 W = "⚪"
+
+logger = logging.getLogger('discord')
 
 gif_channel = 'testing-ground'
 
@@ -40,8 +43,9 @@ def build_title(ctx, game):
 
 
 class Base(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, img_channel: str|None = None):
         self.bot = bot
+        self.img_channel = img_channel
 
     @commands.command()
     async def test(self, ctx, *args):
@@ -49,7 +53,11 @@ class Base(commands.Cog):
 
     @commands.command(name='game')
     async def game_snapshot(self, ctx, *args):
-        game = OGSGame(args[0])
+        try:
+            game = OGSGame(args[0])
+        except:
+            ctx.send("Sorry, I cannot access private games.")
+            return
 
         img_loc = game.snapshot()
         with open(img_loc, 'rb') as f:
@@ -57,11 +65,19 @@ class Base(commands.Cog):
 
         channels = {c.name: c for c in ctx.guild.channels}
         msg = build_title(ctx, game)
-        await channels[gif_channel].send(msg, file=img)
+        if self.img_channel is not None:
+            await channels[self.img_channel].send(msg, file=img)
+        else:
+            await ctx.send(msg, file=img)
 
     @commands.command()
     async def gif(self, ctx, *args):
-        game = OGSGame(args[0])
+        try:
+            game = OGSGame(args[0])
+        except:
+            ctx.send("Sorry, I cannot access private games.")
+            return
+
         dur = 0.25
 
         if len(args) > 1:
@@ -70,7 +86,7 @@ class Base(commands.Cog):
             elif args[1].lower() in ['fast', 'slow']:
                 dur = {'fast': 0.05, 'slow': 1.5}
             else:
-                print('invalid duration value', args[1])
+                logger.info('invalid duration value', args[1])
 
         msg = f'Hi {ctx.author.mention}, your gif of game `{game.id}` is being created (a long game may take a few minutes)'
         await ctx.send(msg)
@@ -81,7 +97,10 @@ class Base(commands.Cog):
 
         channels = {c.name: c for c in ctx.guild.channels}
         msg = build_title(ctx, game)
-        await channels[gif_channel].send(msg, file=gif)
+        if self.img_channel is not None:
+            await channels[self.img_channel].send(msg, file=gif)
+        else:
+            await ctx.send(msg, file=gif)
 
 
 class Bot(commands.Bot):
@@ -90,7 +109,7 @@ class Bot(commands.Bot):
         self.token = token
 
     async def on_ready(self):
-        print(f'We have logged in as {self.user}')
+        logger.info(f'Logged in as {self.user}')
         await self.add_cog(Base(self))
 
     def run(self, *args, **kwargs):

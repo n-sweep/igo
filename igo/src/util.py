@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bs4 import BeautifulSoup as bs
-from itertools import accumulate, permutations
+from itertools import accumulate, product
 import imageio
 import numpy as np
 import os
@@ -18,14 +18,11 @@ W = "⚪"
 
 
 def get_star_points(size: int) -> np.ndarray:
-    board = np.zeros((size, size))
+    board = np.zeros((size,size), dtype=int)
     s = 3 if size > 9 else 2
-    star_points = [j for i in range(3) if (j:=(s+(2*s*i))) < size]
-
-    for p in star_points:
-        board[p][p] = -1
-    for x, y in permutations(star_points, 2):
-        board[x][y] = -1
+    corners = [j for i in range(3) if (j:=(s+(2*s*i))) < size]
+    star_points = [(f:=size//2, f)] + list(product(corners, repeat=2))
+    board[*zip(*star_points)] = -1
 
     return board
 

@@ -10,6 +10,7 @@ setup(
     install_requires=[
         'beautifulsoup4',
         'discord.py',
+        'kaleido',
         'imageio',
         'numpy',
         'plotly',
