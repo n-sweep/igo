@@ -2,7 +2,7 @@ import os
 import logging
 from src.bot import Bot
 
-os.makedirs('logs/')
+os.makedirs('logs/', exist_ok=True)
 handler = logging.FileHandler('logs/session.log', encoding='utf-8', mode='w')
 
 
