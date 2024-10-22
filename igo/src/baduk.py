@@ -200,6 +200,7 @@ class OGSGame:
         frame_path = f'{path}/{self.id}'
         out_path = f'{path}/{self.id}.gif'
         files = sorted([f"{frame_path}/{f}" for f in os.listdir(frame_path)])
+        files = [files[0]] * 3 + files + [files[-1]] * 9
         frames = [iio.imread(f) for f in files]
         iio.mimsave(out_path, frames, fps=1/dur, loop=0)  # pyright: ignore
 

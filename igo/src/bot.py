@@ -56,26 +56,25 @@ class Base(commands.Cog):
         try:
             game = OGSGame(args[0])
         except:
-            ctx.send("Sorry, I cannot access private games.")
+            logger.info(f'private game {args[0]}...')
+            await ctx.reply("Sorry, I cannot access private games.")
             return
 
+        logger.info(f'creating png {game.id}...')
         img_loc = game.snapshot()
         with open(img_loc, 'rb') as f:
             img = discord.File(f, filename=os.path.basename(img_loc))
 
-        channels = {c.name: c for c in ctx.guild.channels}
         msg = build_title(ctx, game)
-        if self.img_channel is not None:
-            await channels[self.img_channel].send(msg, file=img)
-        else:
-            await ctx.send(msg, file=img)
+        await ctx.reply(msg, file=img)
 
     @commands.command()
     async def gif(self, ctx, *args):
         try:
             game = OGSGame(args[0])
         except:
-            ctx.send("Sorry, I cannot access private games.")
+            logger.info(f'private game {args[0]}...')
+            await ctx.reply("Sorry, I cannot access private games.")
             return
 
         dur = 0.25
@@ -86,21 +85,18 @@ class Base(commands.Cog):
             elif args[1].lower() in ['fast', 'slow']:
                 dur = {'fast': 0.05, 'slow': 1.5}
             else:
-                logger.info('invalid duration value', args[1])
+                logger.info(f'invalid duration value {args[1]}')
 
-        msg = f'Hi {ctx.author.mention}, your gif of game `{game.id}` is being created (a long game may take a few minutes)'
-        await ctx.send(msg)
+        msg = f'Hi {ctx.author.mention}, your gif of game `{game.id}` is being created. Sometimes this takes me a few minutes!'
+        await ctx.reply(msg)
 
+        logger.info(f'creating gif {game.id}...')
         gif_loc = await run_in_process(game.create_gif, dur)
         with open(gif_loc, 'rb') as f:
             gif = discord.File(f, filename=os.path.basename(gif_loc))
 
-        channels = {c.name: c for c in ctx.guild.channels}
         msg = build_title(ctx, game)
-        if self.img_channel is not None:
-            await channels[self.img_channel].send(msg, file=gif)
-        else:
-            await ctx.send(msg, file=gif)
+        await ctx.reply(msg, file=gif)
 
 
 class Bot(commands.Bot):
