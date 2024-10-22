@@ -92,8 +92,7 @@ class Board:
     def __str__(self) -> str:
         # get star points
         star_points = np.zeros((self.size,self.size), dtype=int)
-        s = 3 if self.size > 9 else 2
-        corners = [j for i in range(3) if (j:=(s+(2*s*i))) < self.size]
+        corners = [j for i in range(3) if (j:=((s:=1+(self.size>9))+(2*s*i))) < self.size]
         pts = [(f:=self.size//2, f)] + list(product(corners, repeat=2))
         star_points[*zip(*pts)] = -1
 
@@ -102,8 +101,7 @@ class Board:
         board[mask] = star_points[mask]
 
         joined = ' '.join(list(ALPHA.replace('i', '')[:self.size])).upper()
-        s = 3 if self.size > 9 else 2
-        col_label = f"{YELLOW}{'-'*s}{BLACK}{joined}{YELLOW}{'-'*(s+1)}"
+        col_label = f"{YELLOW}{(d:='-'*(s))}{BLACK}{joined}{YELLOW}{d}"
         rows = [col_label]
 
         for r, input_row in enumerate(board, 1):
