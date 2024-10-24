@@ -34,7 +34,7 @@ def build_title(ctx, game):
     p2 = f"{users[p2].mention}" if p2 in users else p2
 
     lines = [
-        f"# [{game.meta['GN']}](<{game.meta['PC'].split(' ')[1]}>) "
+        f"# [{game.meta['GN']}](<{game.meta['PC'].split(' ')[1]}>) ",
         "## (In progress)" if game.meta['RE'] == '?' else f"({game.meta['RE']})\n",
         f"`{B}` {p1}",
         f"`{W}` {p2}",
@@ -83,11 +83,11 @@ class Base(commands.Cog):
             if args[1].isdigit():
                 dur = float(args[1])
             elif args[1].lower() in ['fast', 'slow']:
-                dur = {'fast': 0.05, 'slow': 1.5}
+                dur = {'fast': 0.05, 'slow': 1.5}[args[1]]
             else:
                 logger.info(f'invalid duration value {args[1]}')
 
-        msg = f'Hi {ctx.author.mention}, your gif of game `{game.id}` is being created. Sometimes this takes me a few minutes!'
+        msg = f"Hi {ctx.author.mention}, your gif of game `{game.id}` is being generated. This can take me several minutes, I will ping you when it's complete!"
         await ctx.reply(msg)
 
         logger.info(f'creating gif {game.id}...')
