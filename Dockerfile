@@ -11,3 +11,5 @@ RUN apt-get update && \
 RUN pip install -e .
 
 ENTRYPOINT ["python", "igo"]
+
+# docker run -dit --name igo --net host -e IGO_DISCORD=$(cat /home/n/.config/discord/bots/gobot/token) -v ${PWD}:/app <image>

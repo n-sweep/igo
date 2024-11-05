@@ -3,7 +3,7 @@ import imageio.v2 as iio
 import requests
 import numpy as np
 from itertools import product
-from src.util import draw_go_board, get_star_points, read_sgf
+from src.util import draw_go_board, read_sgf
 
 from typing import Generator
 
@@ -12,7 +12,6 @@ B = "⚫"
 W = "⚪"
 PT = "╶╴"
 SP = "🬇🬃"
-CHARS = (PT, B, W, SP)
 
 # COLORS
 BLACK = '\033[30m'      # ]
@@ -89,10 +88,9 @@ class Board:
     def __repr__(self) -> str:
         return str(self.state)
 
-    def __str__(self) -> str:
-        # get star points
+    def plaintext_board(self) -> str:
         star_points = np.zeros((self.size,self.size), dtype=int)
-        corners = [j for i in range(3) if (j:=((s:=1+(self.size>9))+(2*s*i))) < self.size]
+        corners = [j for i in range(3) if (j:=((s:=2+(self.size>9))+(2*s*i))) < self.size]
         pts = [(f:=self.size//2, f)] + list(product(corners, repeat=2))
         star_points[*zip(*pts)] = -1
 
@@ -101,21 +99,24 @@ class Board:
         board[mask] = star_points[mask]
 
         joined = ' '.join(list(ALPHA.replace('i', '')[:self.size])).upper()
-        col_label = f"{YELLOW}{(d:='-'*(s))}{BLACK}{joined}{YELLOW}{d}"
-        rows = [col_label]
+        rows = [col_label:=f"{YELLOW}{(d:='-' * s)}{BLACK}{joined} {YELLOW}{d}"]
 
         for r, input_row in enumerate(board, 1):
-            row = ''.join([CHARS[p] for p in input_row])
+            row = ''.join([(PT,B,W,SP)[i] for i in input_row])
             num = str(self.size - r + 1)
             lnum = num.rjust(int(len(str(self.size))))
             rnum = num.ljust(int(len(str(self.size))))
             rows.append(f'{BLACK}{lnum} {GRAY}{row} {BLACK}{rnum}')
 
         rows.append(col_label)
-
         rows = [f'{BG_YELLOW}{row}{RESET}' for row in rows]
 
-        return '\n\n' + '\n'.join(rows)
+        return '\n'.join(rows)
+
+    def __str__(self):
+        return self.plaintext_board()
+
+
 
 
 class Stone:
@@ -192,7 +193,6 @@ class OGSGame:
         img_loc = draw_go_board(board, self.id, path, overwrite)
 
         return img_loc
-
 
     def create_gif(self, dur: float = 0.25, path: str = '/tmp/ogs', overwrite: bool = False) -> str:
         for board in self.turns:

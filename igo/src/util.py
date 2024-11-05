@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bs4 import BeautifulSoup as bs
-from itertools import accumulate, product
+from itertools import accumulate
 import imageio
 import numpy as np
 import os
@@ -17,14 +17,12 @@ B = "⚫"
 W = "⚪"
 
 
-def get_star_points(size: int) -> np.ndarray:
-    board = np.zeros((size,size), dtype=int)
-    s = 3 if size > 9 else 2
-    corners = [j for i in range(3) if (j:=(s+(2*s*i))) < size]
-    star_points = [(f:=size//2, f)] + list(product(corners, repeat=2))
-    board[*zip(*star_points)] = -1
-
-    return board
+def find_ogs_user(search: str) -> dict:
+    r = requests.get(
+        'https://online-go.com/api/v1/ui/omniSearch',
+        params={'q': search}
+    )
+    return r.json()['players']
 
 
 def sgf_data() -> dict:

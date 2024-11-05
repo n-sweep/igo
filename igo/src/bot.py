@@ -6,6 +6,7 @@ import concurrent.futures
 from discord.ext import commands
 
 from src.baduk import OGSGame
+from src.util import find_ogs_user
 
 B = "⚫"
 W = "⚪"
@@ -49,7 +50,29 @@ class Base(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, *args):
-        print()
+        ...
+
+    @commands.command()
+    async def ogs_users(self, ctx):
+        """Looks for users with matching OGS usernames and gives them the OGS role"""
+        ogs_role = {r.name: r for r in ctx.guild.roles}['OGS']
+
+        for member in (b for b in self.bot.get_all_members() if not b.bot):
+
+            if 'OGS' not in [r.name for r in member.roles]:
+                logger.info(member)
+
+                results = find_ogs_user(name:=member.display_name.lower())
+                if not results and member.name != name:
+                    results = find_ogs_user(name:=member.name.lower())
+
+                if not (results:={r['username'].lower(): r for r in results}):
+                    logger.info(f'{name}: no matching users found')
+                elif name in results:
+                    logger.info(f'{name}: OGS role added')
+                    await member.add_roles(ogs_role)
+                else:
+                    logger.info(f'{name}: similar matches found: {list(results.keys())}')
 
     @commands.command(name='game')
     async def game_snapshot(self, ctx, *args):
@@ -110,14 +133,3 @@ class Bot(commands.Bot):
 
     def run(self, *args, **kwargs):
         super().run(self.token, *args, **kwargs)
-
-
-def main():
-    with open('/home/n/.config/discord/bots/gobot/token', 'r') as f:
-        token = f.read().strip()
-    bot = Bot(token)
-    bot.run()
-
-
-if __name__ == '__main__':
-    main()

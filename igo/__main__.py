@@ -10,5 +10,6 @@ def main():
     bot = Bot(os.environ['IGO_DISCORD'])
     bot.run(log_handler=handler, root_logger=True)
 
+
 if __name__ == '__main__':
     main()
