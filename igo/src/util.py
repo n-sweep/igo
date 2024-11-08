@@ -52,6 +52,14 @@ def read_sgf(sgf: str) -> tuple:
     return meta, moves
 
 
+def find_ogs_user(search: str) -> dict:
+    r = requests.get(
+        'https://online-go.com/api/v1/ui/omniSearch',
+        params={'q': search}
+    )
+    return r.json()['players']
+
+
 def draw_go_board(board: Board, game_id: str|int, path: str = '/tmp/ogs', overwrite: bool = False) -> str:
 
     dir = f"{path}/{game_id}"

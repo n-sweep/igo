@@ -2,7 +2,6 @@ import os
 import imageio.v2 as iio
 import requests
 import numpy as np
-from itertools import product
 from src.util import draw_go_board, read_sgf, get_star_points
 
 from typing import Generator
