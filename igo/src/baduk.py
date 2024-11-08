@@ -3,7 +3,7 @@ import imageio.v2 as iio
 import requests
 import numpy as np
 from itertools import product
-from src.util import draw_go_board, read_sgf
+from src.util import draw_go_board, read_sgf, get_star_points
 
 from typing import Generator
 
@@ -89,17 +89,12 @@ class Board:
         return str(self.state)
 
     def plaintext_board(self) -> str:
-        star_points = np.zeros((self.size,self.size), dtype=int)
-        corners = [j for i in range(3) if (j:=((s:=2+(self.size>9))+(2*s*i))) < self.size]
-        pts = [(f:=self.size//2, f)] + list(product(corners, repeat=2))
-        star_points[*zip(*pts)] = -1
-
         board = self.state.copy()
         mask = ~self.state.astype(bool)
-        board[mask] = star_points[mask]
+        board[mask] = get_star_points(self.size)[mask]
 
         joined = ' '.join(list(ALPHA.replace('i', '')[:self.size])).upper()
-        rows = [col_label:=f"{YELLOW}{(d:='-' * s)}{BLACK}{joined} {YELLOW}{d}"]
+        rows = [col_label:=f"{YELLOW}{(d:='-' * (2+(self.size>9)))}{BLACK}{joined} {YELLOW}{d}"]
 
         for r, input_row in enumerate(board, 1):
             row = ''.join([(PT,B,W,SP)[i] for i in input_row])
@@ -115,8 +110,6 @@ class Board:
 
     def __str__(self):
         return self.plaintext_board()
-
-
 
 
 class Stone:

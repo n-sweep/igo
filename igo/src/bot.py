@@ -60,8 +60,6 @@ class Base(commands.Cog):
         for member in (b for b in self.bot.get_all_members() if not b.bot):
 
             if 'OGS' not in [r.name for r in member.roles]:
-                logger.info(member)
-
                 results = find_ogs_user(name:=member.display_name.lower())
                 if not results and member.name != name:
                     results = find_ogs_user(name:=member.name.lower())
