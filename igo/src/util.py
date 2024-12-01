@@ -45,6 +45,18 @@ def sgf_data() -> dict:
 
 
 def read_sgf(sgf: str) -> tuple:
+    """Parse a Smart Game Format file into metadata and game moves
+
+    Parameters
+    ----------
+    sgf
+        string data of the SGF file
+
+    Returns
+    -------
+    a tuple containing metadata and game moves
+    """
+
     text = sgf.strip(')').split(';')
     meta = dict(re.findall(r'(\w+)\[(.*?)\]\n?', text[1]))
     moves = [tuple(m.strip('\n()]').split('[')) for m in text[2:]]

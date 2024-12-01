@@ -120,8 +120,8 @@ class Stone:
     @property
     def neighbors(self) -> tuple:
         neighbor_locs = np.array(((0, 1), (1, 0), (0, -1), (-1, 0))) + self.location
-        oob = (neighbor_locs >= 0) & (neighbor_locs < self.board.size)
-        neighbor_locs = neighbor_locs[oob.all(axis=1)]
+        oob = (neighbor_locs < 0) & (neighbor_locs >= self.board.size)
+        neighbor_locs = neighbor_locs[~oob.any(axis=1)]
         neighbor_vals = self.board.state[neighbor_locs[:, 0], neighbor_locs[:, 1]]
 
         return neighbor_locs, neighbor_vals
@@ -130,7 +130,7 @@ class Stone:
     def connections(self) -> list:
         locs, vals = self.neighbors
         conns = locs[vals == self.color]
-        return list(self.board._stones[conns[:, 0], conns[:, 1]])
+        return list(self.board.stones[conns[:, 0], conns[:, 1]])
 
     @property
     def liberties(self) -> set:
