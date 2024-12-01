@@ -130,7 +130,7 @@ class Stone:
     def connections(self) -> list:
         locs, vals = self.neighbors
         conns = locs[vals == self.color]
-        return list(self.board.stones[conns[:, 0], conns[:, 1]])
+        return list(self.board.state[conns[:, 0], conns[:, 1]])
 
     @property
     def liberties(self) -> set:

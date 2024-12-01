@@ -3,7 +3,7 @@ from src.baduk import OGSGame
 
 def main():
 
-    game_url = "https://online-go.com/game/<id>"
+    game_url = "https://online-go.com/game/69835054"
 
     game = OGSGame(game_url)
     # game = OGSGame('<id>')
